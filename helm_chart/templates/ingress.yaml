@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{  .Values.namespace }}-ingress
+  namespace: {{  .Values.namespace }}
+  annotations:
+    cert-manager.io/issuer: "letsencrypt-{{  .Values.namespace }}"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: {{  .Values.namespace }}-ingress
+  tls:
+  - hosts:
+    {{- if .Values.microservices.webserver }}
+    - www.webserver.com
+    {{- end }}
+    secretName: ingress-{{  .Values.namespace }}-secret
+  rules:
+  {{- if .Values.microservices.webserver }}
+  - host: www.{{  .Values.namespace }}.cncqitreply.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: webserver-service
+            port:
+              number: 80
+  {{- end }}

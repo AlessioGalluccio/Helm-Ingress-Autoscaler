@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt -{{  .Values.namespace }}
+  namespace: {{  .Values.namespace }}
+spec:
+  acme:
+    # The Let's Encrypt server URL for production
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: example@mail.com # Change to your email address
+    privateKeySecretRef:
+      name: letsencrypt-{{  .Values.namespace }}-secret
+    solvers:
+    - http01:
+        ingress:
+          ingressClassName: {{  .Values.namespace }}-ingress

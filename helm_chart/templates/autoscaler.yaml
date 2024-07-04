@@ -1,0 +1,15 @@
+{{- if .Values.microservices.webserver -}}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: webserver-autoscaler
+  namespace: {{  .Values.namespace }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: webserver-deployment
+  minReplicas: {{  .Values.webserver.min_pods }}
+  maxReplicas: {{  .Values.webserver.max_pods }}
+
+{{- end }}

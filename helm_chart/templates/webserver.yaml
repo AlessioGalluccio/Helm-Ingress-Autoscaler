@@ -1,0 +1,48 @@
+{{- if .Values.microservices.webserver -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webserver-deployment
+  namespace: {{  .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webserver
+  template:
+    metadata:
+      labels:
+        app: webserver
+    spec:
+      containers:
+      - name: webserver-container
+        image: webservice.azurecr.io/{{  .Values.image_webserver }}
+        imagePullPolicy: Always
+        env:
+        resources:
+          requests:
+            cpu: {{  .Values.webserver.cpu_request }}
+          limits:
+            memory: {{  .Values.webserver.memory_limit }}
+        ports:
+        - containerPort: 80
+      
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: webserver
+    k8s-app: service
+  name: webserver-service
+  namespace: {{  .Values.namespace }}
+spec:
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
+  selector:
+    app: webserver
+{{- end }}
